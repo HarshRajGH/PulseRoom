@@ -6,3 +6,4 @@ uploads/*
 dist/
 coverage/
 .DS_Store
+.env.example
