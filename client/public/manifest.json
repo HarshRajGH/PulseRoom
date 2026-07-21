@@ -1,0 +1,10 @@
+{
+  "name": "SyncWave",
+  "short_name": "SyncWave",
+  "description": "Collaborative playlists and live listening parties.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0D0B14",
+  "theme_color": "#0D0B14",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}

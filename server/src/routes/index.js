@@ -1,0 +1,23 @@
+const router = require('express').Router()
+
+router.use('/auth', require('./auth.routes'))
+router.use('/users', require('./user.routes'))
+router.use('/artists', require('./artist.routes'))
+router.use('/albums', require('./album.routes'))
+router.use('/songs', require('./song.routes'))
+router.use('/library', require('./library.routes'))
+router.use('/playlists', require('./playlist.routes'))
+router.use('/rooms', require('./room.routes'))
+router.use('/friends', require('./friend.routes'))
+router.use('/conversations', require('./conversation.routes'))
+router.use('/privacy', require('./privacySettings.routes'))
+router.use('/notifications', require('./notification.routes'))
+router.use('/wallet', require('./wallet.routes'))
+router.use('/subscriptions', require('./subscription.routes'))
+router.use('/reports', require('./report.routes'))
+router.use('/analytics', require('./analytics.routes'))
+router.use('/search', require('./search.routes'))
+router.use('/recommendations', require('./recommendation.routes'))
+router.use('/admin', require('./admin.routes'))
+
+module.exports = router

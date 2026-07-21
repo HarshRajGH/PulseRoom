@@ -1,0 +1,79 @@
+name: CD — Build & Publish Images
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_SERVER: ${{ github.repository }}/server
+  IMAGE_CLIENT: ${{ github.repository }}/client
+
+jobs:
+  publish:
+    name: Push images to GHCR
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Metadata — server
+        id: meta-server
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_SERVER }}
+          tags: |
+            type=sha
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+
+      - name: Build & push server
+        uses: docker/build-push-action@v5
+        with:
+          context: server
+          push: true
+          tags: ${{ steps.meta-server.outputs.tags }}
+          labels: ${{ steps.meta-server.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Metadata — client
+        id: meta-client
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_CLIENT }}
+          tags: |
+            type=sha
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+
+      - name: Build & push client
+        uses: docker/build-push-action@v5
+        with:
+          context: client
+          push: true
+          tags: ${{ steps.meta-client.outputs.tags }}
+          labels: ${{ steps.meta-client.outputs.labels }}
+          build-args: |
+            VITE_API_URL=/api/v1
+            VITE_SOCKET_URL=/
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+    # Deployment step (SSH/Kubernetes/Render/Railway/etc.) is intentionally
+    # left as a placeholder — it depends entirely on where you're hosting.
+    # Once images are in GHCR, a typical next step is either:
+    #   - SSH into a host running docker-compose and `docker compose pull && up -d`
+    #   - or trigger your platform's deploy hook (Render/Railway/Fly.io/etc.)

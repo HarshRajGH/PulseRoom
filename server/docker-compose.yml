@@ -1,0 +1,56 @@
+version: '3.9'
+
+services:
+  api:
+    build: .
+    container_name: syncwave-api
+    restart: unless-stopped
+    ports:
+      - '5000:5000'
+    env_file: .env
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/syncwave
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - mongo
+      - redis
+    volumes:
+      - ./logs:/usr/src/app/logs
+      - ./uploads:/usr/src/app/uploads
+
+  worker:
+    build: .
+    container_name: syncwave-worker
+    restart: unless-stopped
+    command: node src/jobs/worker.runner.js
+    env_file: .env
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/syncwave
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - mongo
+      - redis
+
+  mongo:
+    image: mongo:7
+    container_name: syncwave-mongo
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo-data:/data/db
+
+  redis:
+    image: redis:7-alpine
+    container_name: syncwave-redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-data:/data
+
+volumes:
+  mongo-data:
+  redis-data:

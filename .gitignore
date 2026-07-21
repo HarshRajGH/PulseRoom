@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Build outputs
+client/dist/
+client/build/
+server/dist/
+server/build/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+server/logs/
+
+# Runtime data
+mongo_data/
+mongo/
+redis/
+dump.rdb
+*.rdb
+server/uploads/*
+!server/uploads/.gitkeep
+
+# OS/editor files
+.DS_Store
+.vscode/
+
+# Archives
+*.zip
+*.tar
+*.gz
