@@ -17,4 +17,12 @@ const authLimiter = rateLimit({
   message: { success: false, statusCode: 429, message: 'Too many auth attempts — try again later.' },
 })
 
-module.exports = { apiLimiter, authLimiter }
+const uploadLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 8,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, statusCode: 429, message: 'Upload limit reached (8 per hour).' },
+})
+
+module.exports = { apiLimiter, authLimiter, uploadLimiter }

@@ -19,5 +19,6 @@ router.use('/analytics', require('./analytics.routes'))
 router.use('/search', require('./search.routes'))
 router.use('/recommendations', require('./recommendation.routes'))
 router.use('/admin', require('./admin.routes'))
+router.use('/spotify', require('./spotify.routes'))
 
 module.exports = router

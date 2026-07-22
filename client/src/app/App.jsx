@@ -58,6 +58,7 @@ const ManageUsers = lazy(() => import('@/pages/admin/ManageUsers'))
 const ManageRooms = lazy(() => import('@/pages/admin/ManageRooms'))
 const ReportedMessages = lazy(() => import('@/pages/admin/ReportedMessages'))
 const Moderation = lazy(() => import('@/pages/admin/Moderation'))
+const VerificationQueue = lazy(() => import('@/pages/admin/VerificationQueue'))
 
 const NotFound = lazy(() => import('@/pages/errors/NotFound'))
 const ServerError = lazy(() => import('@/pages/errors/ServerError'))
@@ -130,6 +131,7 @@ export default function App() {
               <Route path="rooms" element={<ManageRooms />} />
               <Route path="reports" element={<ReportedMessages />} />
               <Route path="moderation" element={<Moderation />} />
+              <Route path="verification" element={<VerificationQueue />} />
             </Route>
           </Route>
         </Route>

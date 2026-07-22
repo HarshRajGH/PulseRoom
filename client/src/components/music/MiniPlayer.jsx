@@ -1,48 +1,83 @@
+import React, { useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Repeat1, Volume2, Heart, Mic2 } from 'lucide-react'
+import { Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Repeat1, Volume2, Heart, Mic2, Music2, ExternalLink } from 'lucide-react'
 import { togglePlay, setProgress, setVolume, toggleShuffle, cycleRepeat } from '@/store/slices/playerSlice'
 import { useLikeSongMutation, useUnlikeSongMutation } from '@/services/library.api'
 import { useRegisterPlayMutation } from '@/services/song.api'
 import { formatDuration } from '@/utils/format'
 import EqBars from '@/components/ui/EqBars'
 import { cn } from '@/utils/cn'
-import { useEffect, useRef } from 'react'
 
 export default function MiniPlayer() {
   const dispatch = useDispatch()
   const { currentTrack, isPlaying, progress, volume, shuffled, repeat, activeRoomId } = useSelector((s) => s.player)
   const userId = useSelector((s) => s.auth.user?._id)
+  const sidebarCollapsed = useSelector((s) => s.ui.sidebarCollapsed)
   const [likeSong] = useLikeSongMutation()
   const [unlikeSong] = useUnlikeSongMutation()
   const [registerPlay] = useRegisterPlayMutation()
   const playRegistered = useRef(null)
 
   useEffect(() => {
-    if (currentTrack && isPlaying && playRegistered.current !== currentTrack._id) {
+    // Skip play registration for Spotify preview tracks (their _id starts with 'spotify:')
+    if (currentTrack && isPlaying && !currentTrack.isSpotifyTrack && playRegistered.current !== currentTrack._id) {
       playRegistered.current = currentTrack._id
       registerPlay(currentTrack._id)
     }
   }, [currentTrack, isPlaying, registerPlay])
 
+  // Responsive sidebar offset — recalculated on mount & window resize
+  const [lgScreen, setLgScreen] = React.useState(() => window.innerWidth >= 1024)
+  React.useEffect(() => {
+    const onResize = () => setLgScreen(window.innerWidth >= 1024)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+
   if (!currentTrack) return null
 
-  const liked = currentTrack.likedBy?.includes(userId)
+  const isSpotify = Boolean(currentTrack.isSpotifyTrack)
+  const liked = !isSpotify && currentTrack.likedBy?.includes(userId)
   const elapsed = Math.round((progress / 100) * currentTrack.duration)
   const artistName = currentTrack.artist?.name || 'Unknown artist'
 
+  const playerLeft = lgScreen ? (sidebarCollapsed ? 76 : 248) : 0
+
   return (
-    <div className="fixed bottom-0 lg:bottom-0 inset-x-0 z-40 mb-14 lg:mb-0">
+    <div
+      className="fixed bottom-0 right-0 z-40 mb-14 lg:mb-0 transition-[left] duration-[250ms] ease-in-out"
+      style={{ left: playerLeft }}
+    >
       <div className="glass-solid border-t border-white/[0.06] px-4 py-2.5">
         <div className="max-w-screen-2xl mx-auto flex items-center gap-4">
           <div className="flex items-center gap-3 w-56 shrink-0 min-w-0">
-            <div className="w-11 h-11 rounded-lg shrink-0 bg-cover bg-center" style={{ background: currentTrack.coverUrl ? `url(${currentTrack.coverUrl}) center/cover` : 'linear-gradient(160deg,#7C5CFF,#0D0B14)' }} />
+            {/* Cover art with Spotify badge */}
+            <div className="relative w-11 h-11 shrink-0">
+              <div className="w-full h-full rounded-lg bg-cover bg-center" style={{ background: currentTrack.coverUrl ? `url(${currentTrack.coverUrl}) center/cover` : 'linear-gradient(160deg,#7C5CFF,#0D0B14)' }} />
+              {isSpotify && (
+                <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-[#1DB954] flex items-center justify-center border border-[#0D0B14]">
+                  <Music2 size={8} className="text-black" />
+                </div>
+              )}
+            </div>
             <div className="min-w-0">
               <p className="text-sm font-semibold truncate">{currentTrack.title}</p>
-              <p className="text-xs text-muted truncate">{artistName}{activeRoomId && <span className="text-current-2"> · synced to room</span>}</p>
+              <p className="text-xs text-muted truncate">
+                {artistName}
+                {isSpotify && <span className="text-[#1DB954]" > · Spotify preview</span>}
+                {!isSpotify && activeRoomId && <span className="text-current-2"> · synced to room</span>}
+              </p>
             </div>
-            <button onClick={() => (liked ? unlikeSong(currentTrack._id) : likeSong(currentTrack._id))} className="ml-1 shrink-0">
-              <Heart size={15} className={liked ? 'fill-ember text-ember' : 'text-mist'} />
-            </button>
+            {/* Like (local only) or open-on-Spotify */}
+            {isSpotify ? (
+              <a href={currentTrack.externalUrl} target="_blank" rel="noopener noreferrer" className="ml-1 shrink-0 text-[#1DB954] hover:opacity-80" title="Open full track on Spotify">
+                <ExternalLink size={14} />
+              </a>
+            ) : (
+              <button onClick={() => (liked ? unlikeSong(currentTrack._id) : likeSong(currentTrack._id))} className="ml-1 shrink-0">
+                <Heart size={15} className={liked ? 'fill-ember text-ember' : 'text-mist'} />
+              </button>
+            )}
           </div>
 
           <div className="flex-1 flex flex-col items-center gap-1.5 max-w-xl mx-auto">

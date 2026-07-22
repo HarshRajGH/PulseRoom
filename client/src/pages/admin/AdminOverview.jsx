@@ -1,4 +1,4 @@
-import { Users, Radio, Flag, IndianRupee, Loader2 } from 'lucide-react'
+import { Users, Radio, Flag, IndianRupee, Loader2, Music } from 'lucide-react'
 import { useDashboardStatsQuery } from '@/services/admin.api'
 import { usePlatformOverviewQuery } from '@/services/analytics.api'
 import { formatCompactNumber, formatCurrency } from '@/utils/format'
@@ -13,6 +13,7 @@ export default function AdminOverview() {
     { icon: Users, label: 'Total users', value: formatCompactNumber(stats?.totalUsers || 0) },
     { icon: Radio, label: 'Active rooms', value: stats?.activeRoomsCount || 0 },
     { icon: Flag, label: 'Open reports', value: stats?.openReports || 0 },
+    { icon: Music, label: 'Pending songs', value: stats?.pendingSongs || 0 },
     { icon: IndianRupee, label: 'Revenue (MTD)', value: formatCurrency(stats?.revenueMTD || overview?.revenueMTD || 0) },
   ]
 

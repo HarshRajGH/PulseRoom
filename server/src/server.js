@@ -31,3 +31,5 @@ async function bootstrap() {
 }
 
 bootstrap()
+// Trigger restart for Redis
+// Trigger restart for Cloudinary

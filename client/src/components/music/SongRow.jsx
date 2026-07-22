@@ -1,8 +1,10 @@
+import { useState } from 'react'
 import { Play, Heart, MoreHorizontal } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { playTrack, setActiveRoom } from '@/store/slices/playerSlice'
 import { useLikeSongMutation, useUnlikeSongMutation } from '@/services/library.api'
 import { formatDuration } from '@/utils/format'
+import AddToPlaylistMenu from './AddToPlaylistMenu'
 
 export default function SongRow({ track, index }) {
   const dispatch = useDispatch()
@@ -13,6 +15,7 @@ export default function SongRow({ track, index }) {
   const liked = track.likedBy?.includes(userId)
   const artistName = track.artist?.name || 'Unknown artist'
   const active = currentId === track._id
+  const [showMenu, setShowMenu] = useState(false)
 
   const play = () => {
     dispatch(setActiveRoom(null))
@@ -42,8 +45,18 @@ export default function SongRow({ track, index }) {
       </button>
       <div className="hidden sm:flex items-center gap-3 justify-end">
         <span className="text-xs font-mono text-mist">{formatDuration(track.duration)}</span>
-        <button className="text-mist hover:text-paper"><MoreHorizontal size={15} /></button>
+        <div className="relative">
+          <button
+            onClick={(e) => { e.stopPropagation(); setShowMenu((v) => !v) }}
+            title="Add to playlist"
+            className="text-mist hover:text-paper transition-colors"
+          >
+            <MoreHorizontal size={15} />
+          </button>
+          {showMenu && <AddToPlaylistMenu songId={track._id} onClose={() => setShowMenu(false)} />}
+        </div>
       </div>
     </div>
   )
 }
+

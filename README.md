@@ -281,6 +281,7 @@ Keeps the frequently-read, rarely-changing `User` document lean, and makes
 users who existed before the feature shipped.
 
 **What would you change if this had to scale to millions of users?**
+
 Socket.io would need the Redis adapter (`@socket.io/redis-adapter`) so
 `io.to(room).emit(...)` fans out correctly across multiple API instances —
 everything here already treats Redis as the shared source of truth for

@@ -10,6 +10,10 @@ const redisConfig = {
   lazyConnect: true,
 }
 
+if (env.redis.host && !env.redis.host.includes('localhost') && !env.redis.host.includes('127.0.0.1')) {
+  redisConfig.tls = {}
+}
+
 const redisClient = new Redis(redisConfig)
 
 redisClient.on('connect', () => logger.info(`Redis connected → ${env.redis.host}:${env.redis.port}`))

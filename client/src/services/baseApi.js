@@ -5,7 +5,8 @@ import apiClient, { getAccessToken } from './apiClient'
 // (and its 401 → refresh-token interceptor) instead of a second fetch client.
 const axiosBaseQuery = () => async ({ url, method = 'get', data, params }) => {
   try {
-    const result = await apiClient({ url, method, data, params })
+    const headers = data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : {}
+    const result = await apiClient({ url, method, data, params, headers })
     return { data: result.data.data, meta: result.data }
   } catch (error) {
     return {
@@ -22,10 +23,10 @@ export const baseApi = createApi({
   reducerPath: 'api',
   baseQuery: axiosBaseQuery(),
   tagTypes: [
-    'Me', 'User', 'Song', 'Artist', 'Album', 'Playlist', 'Room', 'Queue',
+    'Me', 'User', 'Song', 'PendingSong', 'MySong', 'Artist', 'Album', 'Playlist', 'Room', 'Queue',
     'Message', 'Notification', 'Wallet', 'Transaction', 'Tip', 'Subscription',
     'FriendRequest', 'Friend', 'Report', 'Analytics', 'AdminStats', 'AuditLog',
-    'Privacy', 'Conversation', 'DirectMessage',
+    'Privacy', 'Conversation', 'DirectMessage', 'SpotifyLib',
   ],
   // Keep unused data around for 60s so switching tabs doesn't re-fetch instantly.
   keepUnusedDataFor: 60,

@@ -1,11 +1,12 @@
 import { NavLink, Outlet } from 'react-router-dom'
-import { LayoutDashboard, Users, Radio, Flag, ShieldAlert } from 'lucide-react'
+import { LayoutDashboard, Users, Radio, Flag, ShieldAlert, Music } from 'lucide-react'
 import { cn } from '@/utils/cn'
 
 const tabs = [
   ['/app/admin', 'Overview', LayoutDashboard], ['/app/admin/users', 'Users', Users],
   ['/app/admin/rooms', 'Rooms', Radio], ['/app/admin/reports', 'Reported messages', Flag],
   ['/app/admin/moderation', 'Moderation', ShieldAlert],
+  ['/app/admin/verification', 'Verification Queue', Music],
 ]
 
 export default function AdminLayout() {

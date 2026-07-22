@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import toast from 'react-hot-toast'
-import { Users, Share2, MessageSquare, UserPlus, Gift, Loader2 } from 'lucide-react'
+import { Users, Share2, MessageSquare, UserPlus, Gift, Loader2, Plus } from 'lucide-react'
 import Tabs from '@/components/ui/Tabs'
 import Badge from '@/components/ui/Badge'
 import EqBars from '@/components/ui/EqBars'
@@ -11,6 +11,7 @@ import Modal from '@/components/ui/Modal'
 import Input from '@/components/ui/Input'
 import QueueItem from '@/components/room/QueueItem'
 import ChatPanel from '@/components/room/ChatPanel'
+import AddToQueueModal from '@/components/room/AddToQueueModal'
 import { useGetRoomQuery, useGetQueueQuery, useGetMessagesQuery } from '@/services/room.api'
 import { useSendTipMutation } from '@/services/wallet.api'
 import { useSocket } from '@/app/SocketProvider'
@@ -29,6 +30,7 @@ export default function RoomDetails() {
   const [tab, setTab] = useState('queue')
   const [inviteOpen, setInviteOpen] = useState(false)
   const [tipOpen, setTipOpen] = useState(false)
+  const [queueOpen, setQueueOpen] = useState(false)
   const [tipAmount, setTipAmount] = useState(50)
   const [tipNote, setTipNote] = useState('')
   const [sendTip, { isLoading: sendingTip }] = useSendTipMutation()
@@ -183,11 +185,32 @@ export default function RoomDetails() {
           />
 
           {tab === 'queue' && (
-            <div className="space-y-1">
-              {queue.length === 0 && <p className="text-sm text-muted text-center py-8">Queue is empty — be the first to add a track.</p>}
-              {queue.map((entry, i) => (
-                <QueueItem key={entry._id} entry={entry} rank={i + 1} onUpvote={handleUpvote} hasVoted={hasVoted[entry._id]} />
-              ))}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-muted font-medium">{queue.length} song{queue.length !== 1 ? 's' : ''} in queue</p>
+                <button
+                  onClick={() => setQueueOpen(true)}
+                  className="flex items-center gap-1.5 rounded-full bg-current/15 hover:bg-current/25 text-current-2 px-3 py-1.5 text-xs font-semibold transition-colors"
+                >
+                  <Plus size={12} />Add track
+                </button>
+              </div>
+              {queue.length === 0 && (
+                <div className="flex flex-col items-center gap-3 py-10 text-center">
+                  <p className="text-sm text-muted">Queue is empty — be the first to add a track.</p>
+                  <button
+                    onClick={() => setQueueOpen(true)}
+                    className="flex items-center gap-1.5 rounded-full bg-current text-white px-4 py-2 text-sm font-semibold hover:opacity-90 transition-opacity"
+                  >
+                    <Plus size={14} />Add the first track
+                  </button>
+                </div>
+              )}
+              <div className="space-y-1">
+                {queue.map((entry, i) => (
+                  <QueueItem key={entry._id} entry={entry} rank={i + 1} onUpvote={handleUpvote} hasVoted={hasVoted[entry._id]} />
+                ))}
+              </div>
             </div>
           )}
 
@@ -241,6 +264,7 @@ export default function RoomDetails() {
           <Button type="submit" className="w-full" disabled={sendingTip}>{sendingTip ? 'Sending…' : `Send ₹${tipAmount} tip`}</Button>
         </form>
       </Modal>
+      {queueOpen && <AddToQueueModal roomId={roomId} onClose={() => setQueueOpen(false)} />}
     </div>
   )
 }

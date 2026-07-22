@@ -83,8 +83,30 @@ export default function PlaylistDetails() {
             </div>
           ))}
         </div>
-      ) : <RowSkeletonList count={0} />}
-      {!tracks.length && <p className="text-sm text-muted text-center py-8">No tracks yet — add songs from Discover or Library.</p>}
+      ) : null}
+      {!tracks.length && (
+        <div className="flex flex-col items-center gap-4 py-16 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-surface-2 flex items-center justify-center">
+            <Play size={24} className="text-mist" />
+          </div>
+          <div>
+            <p className="font-semibold mb-1">No tracks yet</p>
+            <p className="text-sm text-muted">Find songs to add using the buttons below</p>
+          </div>
+          <div className="flex gap-3 flex-wrap justify-center">
+            <a href="/app/discover" className="inline-flex items-center gap-2 rounded-full bg-current px-4 py-2 text-sm font-semibold text-white hover:opacity-90 transition-opacity">
+              Browse Discover
+            </a>
+            <a href="/app/search" className="inline-flex items-center gap-2 rounded-full bg-surface-2 border border-white/10 px-4 py-2 text-sm font-semibold hover:bg-white/10 transition-colors">
+              Search songs
+            </a>
+            <a href="/app/library" className="inline-flex items-center gap-2 rounded-full bg-surface-2 border border-white/10 px-4 py-2 text-sm font-semibold hover:bg-white/10 transition-colors">
+              Go to Library
+            </a>
+          </div>
+          <p className="text-xs text-muted">Then click the <strong>⋯ three-dot button</strong> on any song to add it here</p>
+        </div>
+      )}
     </div>
   )
 }

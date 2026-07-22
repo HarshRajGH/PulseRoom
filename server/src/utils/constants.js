@@ -14,6 +14,7 @@ const REPORT_TARGET_TYPE = Object.freeze({ USER: 'user', ROOM: 'room', MESSAGE: 
 const NOTIFICATION_TYPE = Object.freeze({
   VOTE: 'vote', FOLLOW: 'follow', ROOM: 'room', TIP: 'tip',
   PLAYLIST: 'playlist', SYSTEM: 'system', FRIEND_REQUEST: 'friend_request', MESSAGE: 'message',
+  SONG_APPROVED: 'song_approved', SONG_REJECTED: 'song_rejected',
 })
 
 const TRANSACTION_TYPE = Object.freeze({ TIP: 'tip', SUBSCRIPTION: 'subscription', WITHDRAWAL: 'withdrawal', REFUND: 'refund' })
